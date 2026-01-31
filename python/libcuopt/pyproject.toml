@@ -56,6 +56,7 @@ max_allowed_size_compressed = '620M'
 
 [project.scripts]
 cuopt_cli = "libcuopt._cli_wrapper:main"
+feasibility_jump_cli = "libcuopt.feasibility_jump_cli:main"
 
 
 [tool.scikit-build]

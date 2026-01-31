@@ -501,6 +501,49 @@ install(TARGETS cuopt_cli
   COMPONENT runtime
   RUNTIME DESTINATION ${_BIN_DEST}
 )
+
+add_executable(feasibility_jump_cli feasibility_jump_cli.cpp)
+
+set_target_properties(feasibility_jump_cli
+  PROPERTIES
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED ON
+  CXX_SCAN_FOR_MODULES OFF
+)
+
+target_compile_options(feasibility_jump_cli
+  PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CUOPT_CXX_FLAGS}>"
+  "$<$<COMPILE_LANGUAGE:CUDA>:${CUOPT_CUDA_FLAGS}>"
+)
+
+target_include_directories(feasibility_jump_cli
+  PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}/src"
+  PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+  ${CUDSS_INCLUDE}
+  "$<INSTALL_INTERFACE:include>"
+)
+
+target_link_libraries(feasibility_jump_cli
+  PUBLIC
+  cuopt
+  OpenMP::OpenMP_CXX
+  ${CUDSS_LIBRARIES}
+  TBB::tbb
+  PRIVATE
+)
+  # Use RUNPATH when building locally in order to allow LD_LIBRARY_PATH to override the conda env path
+if(NOT DEFINED INSTALL_TARGET OR "${INSTALL_TARGET}" STREQUAL "")
+  target_link_options(feasibility_jump_cli PRIVATE -Wl,--enable-new-dtags)
+endif()
+set_property(TARGET feasibility_jump_cli PROPERTY INSTALL_RPATH "$ORIGIN/../${lib_dir}")
+
+install(TARGETS feasibility_jump_cli
+  COMPONENT runtime
+  RUNTIME DESTINATION ${_BIN_DEST}
+)
 endif()
 
 
