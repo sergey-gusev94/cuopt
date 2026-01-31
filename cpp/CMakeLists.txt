@@ -534,6 +534,34 @@ if(BUILD_MIP_BENCHMARKS AND NOT BUILD_LP_ONLY)
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
   )
 
+  add_executable(run_fj ../benchmarks/linear_programming/cuopt/run_fj.cpp)
+
+  set_target_properties(run_fj
+    PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    CXX_SCAN_FOR_MODULES OFF
+  )
+
+  target_compile_options(run_fj
+    PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CUOPT_CXX_FLAGS}>"
+    "$<$<COMPILE_LANGUAGE:CUDA>:${CUOPT_CUDA_FLAGS}>"
+  )
+  target_link_libraries(run_fj
+    PUBLIC
+    cuopt
+    OpenMP::OpenMP_CXX
+    PRIVATE
+  )
+  if(NOT DEFINED INSTALL_TARGET OR "${INSTALL_TARGET}" STREQUAL "")
+    target_link_options(run_fj PRIVATE -Wl,--enable-new-dtags)
+  endif()
+
+  target_include_directories(run_fj
+    PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+  )
+
 endif()
 
 option(BUILD_LP_BENCHMARKS "Build LP benchmarks" OFF)
